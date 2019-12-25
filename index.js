@@ -3,6 +3,11 @@ const app = express();
 const bodyParser = require("body-parser");
 const products = require("./routes/products");
 const categories = require("./routes/categories");
+var mongoose = require('mongoose');
+
+//Set up default mongoose connection
+var mongoDB = 'mongodb://127.0.0.1/eprodmanagement';
+mongoose.connect(mongoDB, { useNewUrlParser: true });
 
 app.use(bodyParser.json())
 app.use('/category', categories)
