@@ -1,19 +1,25 @@
 const express = require("express");
 const app = express();
+const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const products = require("./routes/products");
 const categories = require("./routes/categories");
 const user = require("./routes/users");
-var mongoose = require('mongoose');
+const logger = require('./logger');
 require('dotenv').config()
+global.logger = logger
 
-//Set up default mongoose connection
-var mongoDB = process.env.MONGO;
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+// Set up mongodb connection
+mongoose.connect(process.env.MONGO, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+});
 
+// register middlewares
 app.use(bodyParser.json())
 app.use('/category', categories)
 app.use('/product', products)
 app.use('/user', user)
 
-app.listen(process.env.PORT, () => console.log(`Example app listening on port ${3000}!`))
+app.listen(process.env.PORT, () => logger.info(`Server: E-Product-management app listening on port ${3000}!`))
