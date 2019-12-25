@@ -1,10 +1,19 @@
 var express = require('express')
 var prodroute = express.Router()
 let product = require('../models/product');
-prodroute.get('/all', async function (req, res) {
-    try {
+let category = require('../models/category');
 
-        res.status(200).send(await product.find({}))
+prodroute.get('/:category_id', async function (req, res) {
+    try {
+        if (req.params.category_id == "all") {
+            products = await product.find({})
+        } else {
+            products = await category.find({ "parent_id": { $eq: req.params.category_id } }, { _id: 1 })
+            catids = [req.params.category_id]
+            products.map((id) => catids.push("" + id._id))
+            products = await product.find({ category: { $in: catids } })
+        }
+        res.status(200).send(products)
     } catch (error) {
         res.status(400).send(`Error while finding product: ${error}`);
     }
